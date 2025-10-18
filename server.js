@@ -1,4 +1,4 @@
-// backend/server.js - Using direct Square REST API
+// backend/server.js - PRODUCTION VERSION
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -10,15 +10,16 @@ app.use(express.json());
 // Validate environment variables
 if (!process.env.SQUARE_ACCESS_TOKEN) {
   console.error('❌ ERROR: SQUARE_ACCESS_TOKEN is required');
-  console.error('💡 Create a .env file in backend folder with:');
-  console.error('   SQUARE_ACCESS_TOKEN=your_sandbox_access_token_here');
+  console.error('💡 Update environment variables in Render with:');
+  console.error('   SQUARE_ACCESS_TOKEN=your_PRODUCTION_access_token_here');
   process.exit(1);
 }
 
 console.log('✅ Backend server starting...');
 console.log('🔑 Square Access Token:', process.env.SQUARE_ACCESS_TOKEN ? 'Loaded' : 'Missing');
+console.log('🌍 Environment: PRODUCTION');
 
-// Payment processing endpoint - Direct Square API call
+// Payment processing endpoint - PRODUCTION
 app.post('/api/process-payment', async (req, res) => {
   try {
     const { sourceId, amount, bookingData, idempotencyKey } = req.body;
@@ -37,7 +38,7 @@ app.post('/api/process-payment', async (req, res) => {
       });
     }
 
-    // Direct API call to Square
+    // PRODUCTION API call to Square
     const squareResponse = await fetch('https://connect.squareup.com/v2/payments', {
       method: 'POST',
       headers: {
@@ -147,15 +148,15 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     square: {
       configured: !!process.env.SQUARE_ACCESS_TOKEN,
-      environment: 'Sandbox'
+      environment: 'Production'  // ← CHANGED TO PRODUCTION
     }
   });
 });
 
-// Test endpoint to verify Square connection
+// Test endpoint to verify Square connection - PRODUCTION
 app.get('/api/test-square', async (req, res) => {
   try {
-    const response = await fetch('https://connect.squareupsandbox.com/v2/locations', {
+    const response = await fetch('https://connect.squareup.com/v2/locations', {
       headers: {
         'Authorization': `Bearer ${process.env.SQUARE_ACCESS_TOKEN}`,
         'Square-Version': '2024-10-18',
@@ -166,13 +167,13 @@ app.get('/api/test-square', async (req, res) => {
       const data = await response.json();
       res.json({ 
         success: true, 
-        message: 'Square API connection successful',
+        message: 'Square PRODUCTION API connection successful',
         locations: data.locations 
       });
     } else {
       res.status(400).json({
         success: false,
-        error: 'Failed to connect to Square API'
+        error: 'Failed to connect to Square PRODUCTION API'
       });
     }
   } catch (error) {
@@ -186,6 +187,7 @@ app.get('/api/test-square', async (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🚀 Backend server running on http://localhost:${PORT}`);
+  console.log(`🌍 ENVIRONMENT: PRODUCTION`);
   console.log(`📊 Available endpoints:`);
   console.log(`   GET  http://localhost:${PORT}/api/health`);
   console.log(`   GET  http://localhost:${PORT}/api/test-square`);
