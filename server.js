@@ -38,7 +38,7 @@ app.post('/api/process-payment', async (req, res) => {
     }
 
     // Direct API call to Square
-    const squareResponse = await fetch('https://connect.squareupsandbox.com/v2/payments', {
+    const squareResponse = await fetch('https://connect.squareup.com/v2/payments', {
       method: 'POST',
       headers: {
         'Square-Version': '2024-10-18',
